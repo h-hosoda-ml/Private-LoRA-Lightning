@@ -85,7 +85,7 @@ class LigntningTrainingMixin:
             self._best_val_result = None
         return self._best_val_result
 
-    @property.setter
+    @best_val_result.setter
     def best_val_result(self, value):
         self._best_val_result = value
 
@@ -97,10 +97,11 @@ class LigntningTrainingMixin:
 
     def training_step(self, batch, batch_idx):
         outputs = self.forward(**batch)
-        loss = outputs.loss  # NOTE: Huggingface のモデルを使用することを前提
+
+        loss = outputs.loss
 
         self.log("train/loss", loss, on_step=True, prog_bar=True)
-        self.log("train/lr", self.optimizers()[0].param_groups[0]["lr"], on_step=True)
+        self.log("train/lr", self.optimizers().param_groups[0]["lr"], on_step=True)
 
         return loss
 
@@ -160,34 +161,15 @@ class LigntningTrainingMixin:
                         sync_dist=True,
                     )
 
-    def setup(self, stage):
-        train_loader = self.trainer.train_dataloader
-        if train_loader is not None:
-            batch_size = train_loader.batch_size
-            total_batches = len(train_loader)
-
-            if train_loader.drop_last:
-                # 不完全なバッチが切り捨てられている場合
-                self.num_train_examples = total_batches * batch_size
-            else:
-                last_batch_samples = len(train_loader.dataset) % batch_size
-                if last_batch_samples == 0:
-                    last_batch_samples = batch_size
-
-                self.num_train_examples = (
-                    total_batches - 1
-                ) * batch_size + last_batch_samples
-
-            logger.info(f"Train Exampleの数: {self.num_train_examples}")
-
     def configure_optimizers(self):
         from lora_lightning.models.get_optimizer import get_optimizer_and_scheduler
 
         args = self.hparams
-
         (optimizer, schedular), self.trainable_param_names = (
             get_optimizer_and_scheduler(
-                self, args, num_train_examples=self.num_train_examples
+                self,
+                args,
+                num_train_examples=len(self.trainer.datamodule.train_dataset),
             )
         )
 

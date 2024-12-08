@@ -17,11 +17,17 @@ class TrainingArgs:
     # tokenizer
     padding_side: str = "right"
 
+    # Dataset
+    dataset: str = None
+    train_ratio: float = 0.7
+
     # output directories
     data_dir: str = os.getenv("TRAIN_DIR", "./tmp/")
     output_dir: str = os.getenv("OUTPUT_DIR", "./output")
 
     # Training Config
+    accelerator: str = "gpu"
+    compute_strategy: str = "auto"
     scheduler: str = "linear_and_cos_with_warmup"
     checkpoint: str = None
     learning_rate: float = 1e-3

@@ -80,7 +80,7 @@ def get_global_batch_size(
 def compute_loglike_loss(logits: torch.Tensor, labels: torch.Tensor, reduction="none"):
     batch_size = logits.size(0)
     vocab_size = logits.size(-1)
-    labels = logits.squeeze(-1)  # NOTE: labelsを(batch_size, seq_length)へ
+    # labels = labels.squeeze(-1)  # NOTE: labelsを(batch_size, seq_length)へ
 
     # 生成モデルを想定しており、特殊トークンの部分を除く
     shift_logits = logits[:, :-1, :].contiguous()  # 最後を除く
