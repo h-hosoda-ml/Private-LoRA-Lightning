@@ -10,6 +10,8 @@ dependencies = [
     "datasets>=3.1.0",
     "lightning>=2.4.0",
     "tqdm>=4.67.1",
+    "ipykernel>=6.29.5",
+    "build>=1.2.2.post1",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
@@ -24,6 +26,7 @@ dev-dependencies = []
 
 [tool.hatch.metadata]
 allow-direct-references = true
+packages = ["lora_lightning"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["lora_lightning"]
