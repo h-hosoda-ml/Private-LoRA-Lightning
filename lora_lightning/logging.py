@@ -11,7 +11,6 @@ def setup_logging(log_dir: str | None = None, reset_log: bool = True):
         datefmt="%m/%d/%Y %H:%M:%S",
         level=logging.INFO,
     )
-    logger.setLevel(logging.INFO)
 
     if log_dir:
         if not os.path.exists(log_dir):
@@ -27,6 +26,12 @@ def setup_logging(log_dir: str | None = None, reset_log: bool = True):
         file_handler_exists = any(
             isinstance(handler, logging.FileHandler) for handler in logger.handlers
         )
-        if file_handler_exists:
-            logger.addHandler(logging.FileHandler(log_file_path))
+        if not file_handler_exists:
+            file_handler = logging.FileHandler(log_file_path)
+            formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
+            file_handler.setFormatter(formatter)
+            logger.addHandler(file_handler)
+
             logger.info(f"logは '{log_file_path}' に出力されます。")

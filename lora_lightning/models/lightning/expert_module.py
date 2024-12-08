@@ -8,10 +8,10 @@ from lora_lightning.models.lightning.base import (
 )
 
 
-class ExpertModule(LightningEfficientCkpt, LigntningTrainingMixin):
+class ExpertModule(LigntningTrainingMixin, LightningEfficientCkpt):
     def __init__(
-        self, config: TrainingArgs, model_obj: PreTrainedModel | None = None, **kwargs
+        self, args: TrainingArgs, model_obj: PreTrainedModel | None = None, **kwargs
     ):
-        super().__init__(model_obj, **kwargs)
+        LightningEfficientCkpt.__init__(self, model_obj, **vars(args))
 
-        self.model = ExpertModel(config=config, model_obj=model_obj, **kwargs)
+        self.model = ExpertModel(config=args, model_obj=model_obj, **kwargs)
