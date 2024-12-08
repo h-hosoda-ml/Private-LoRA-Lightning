@@ -5,6 +5,7 @@ import argparse
 from dataclasses import dataclass
 
 
+# TODO: Pydanticによるリファクタの検討
 @dataclass
 class TrainingArgs:
     # model arguments
@@ -13,15 +14,20 @@ class TrainingArgs:
     load_in_4bit: bool = False
     load_in_8bit: bool = False
 
+    # tokenizer
+    padding_side: str = "right"
+
     # output directories
-    data_dir: str = os.getenv("TRAIN_DIR", "/tmp/")
+    data_dir: str = os.getenv("TRAIN_DIR", "./tmp/")
     output_dir: str = os.getenv("OUTPUT_DIR", "./output")
 
     # Training Config
-    scheduler: str = "linear_decay_with_warmup"
+    scheduler: str = "linear_and_cos_with_warmup"
     checkpoint: str = None
     learning_rate: float = 1e-3
     warmup_proportion: float = 0.06
+    warmup_steps: int = -1
+    total_steps: int = -1
     train_batch_size: int = 32
     trainable_param_names: str = ".*"
     optimizer: str = "adamw"
@@ -32,8 +38,11 @@ class TrainingArgs:
 
     # LoRA Config
     lora_rank: int = 4
+    lora_alpha: float = 16.0
     lora_dropout: float = 0.05
+    modify_modules: str = ".*"
     modify_layers: str = None
+    lora_init_b_random: bool = False
 
     @classmethod
     def parse(cls):
