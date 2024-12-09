@@ -95,7 +95,6 @@ class DataModule(LightningDataModule, ABC):
         return self.collate_class(tokenizer=self.tokenizer)
 
     def train_dataloader(self) -> DataLoader:
-        logger.info(f"Batch size: {self.args.train_batch_size}")
         return DataLoader(
             self.train_dataset,
             batch_size=self.args.train_batch_size,
