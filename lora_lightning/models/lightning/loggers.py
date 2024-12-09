@@ -52,4 +52,4 @@ class SimpleLogger(Logger):
             logger.error(f"Failed to log merics: {e}")
 
     def log_hyperparams(self, params):
-        logger.info(f"Logging hyperparameters: {params}")
+        logger.info(f"Logging hyperparameters: \n{params}")
