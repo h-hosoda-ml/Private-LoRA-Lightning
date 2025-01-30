@@ -1,0 +1,13 @@
+git
+make
+curl
+build-essential
+libbz2-dev
+libreadline-dev
+libssl-dev
+zlib1g-dev
+libsqlite3-dev
+libncurses5-dev
+liblzma-dev
+libffi-dev
+libdb-dev
