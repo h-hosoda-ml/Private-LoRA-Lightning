@@ -4,38 +4,19 @@ import json
 import torch
 
 import lightning.pytorch as L
-from lightning.pytorch.loggers import Logger
+from lightning.pytorch.loggers.logger import DummyLogger
 
 from lora_lightning.logging import logger
 from lora_lightning.arguments import TrainingArgs
 
 
-def get_pl_loggers(args: TrainingArgs) -> list[Logger]:
-    loggers = []
-
-    add_simple_logger(loggers, args)
-    return loggers
-
-
-def add_simple_logger(loggers: list, args: TrainingArgs):
-    loggers.append(SimpleLogger(args.output_dir))
-
-
-class SimpleLogger(Logger):
+class SimpleLogger(DummyLogger):
     def __init__(self, output_dir):
         self.output_file = os.path.join(output_dir, "mertics.json")
         os.makedirs(output_dir, exist_ok=True)
 
         if os.path.exists(self.output_file):
             os.remove(self.output_file)
-
-    @property
-    def name(self):
-        return "SimpleLogger"
-
-    @property
-    def version(self):
-        return "0.1"
 
     def log_metrics(self, metrics, step):
         lines = []
@@ -51,5 +32,6 @@ class SimpleLogger(Logger):
         except Exception as e:
             logger.error(f"Failed to log merics: {e}")
 
-    def log_hyperparams(self, params):
-        logger.info(f"Logging hyperparameters: \n{params}")
+
+def get_pl_loggers(args: TrainingArgs) -> SimpleLogger:
+    return SimpleLogger(args.output_dir)

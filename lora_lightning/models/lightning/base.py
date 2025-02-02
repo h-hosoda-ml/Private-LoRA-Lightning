@@ -9,7 +9,17 @@ from lora_lightning.logging import logger
 from lora_lightning.models.utils import compute_loglike_loss
 
 
-class LightningEfficientCkpt(LightningModule):
+class OnLogCallback:
+    def log(self, name, value, **kwargs):
+        output = LightningModule.log(self, name, value, **kwargs)
+
+        for callback in self.trainer.callbacks:
+            if hasattr(callback, "on_log"):
+                callback.on_log(self.trainer, self, name, value, **kwargs)
+        return output
+
+
+class LightningEfficientCkpt(OnLogCallback, LightningModule):
     def __init__(self, model_obj: PreTrainedModel | None = None, **kwargs):
         super().__init__()
         self.model_object = model_obj
@@ -30,7 +40,7 @@ class LightningEfficientCkpt(LightningModule):
     def load_state_dict(self, state_dict: dict, **kwargs):
         # 読み込んだstate_dictの情報を格納
         self._params_from_checkpoint = (
-            set(state_dict.keys) if self.save_if_loaded_from_ckpt else set()
+            set(state_dict.keys()) if self.save_if_loaded_from_ckpt else set()
         )
         for name, _ in self.state_dict().items():
             if name in state_dict:
@@ -60,8 +70,9 @@ class LightningEfficientCkpt(LightningModule):
                 name for name, param in self.named_parameters() if param.requires_grad
             ]
 
+        keys = [k for k in state_dict.keys()]
         deleted = []
-        for key in state_dict.keys():
+        for key in keys:
             if not (key in self.trainable_param_names) and not (
                 key in self._params_from_checkpoint
             ):
