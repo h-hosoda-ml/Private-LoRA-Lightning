@@ -49,3 +49,9 @@ class BaseModel(nn.Module):
             input_ids, attention_mask=attention_mask, labels=labels, **kwargs
         )
         return outputs
+
+    def generate(self, input_ids, attention_mask=None, **kwargs):
+        generation = self.model.generate(
+            inputs=input_ids, attention_mask=attention_mask, **kwargs
+        )
+        return generation
