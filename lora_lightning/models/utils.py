@@ -4,6 +4,8 @@ import torch.nn as nn
 
 from lora_lightning.logging import logger
 
+AVAILABLE_MODEL_NAMES = ["pythia", "llama", "gpt-neox"]
+
 
 def model_loader_helper(
     model_name,
@@ -45,7 +47,7 @@ def model_loader_helper(
     if isinstance(model_name, PreTrainedModel):
         return model_name.train()  # 訓練モードへ
 
-    if "pythia" in model_name or "Llama" in model_name:
+    if any([name in model_name.lower() for name in AVAILABLE_MODEL_NAMES]):
         model_object: PreTrainedModel = AutoModelForCausalLM.from_pretrained(
             model_name,
             device_map=device_map,
