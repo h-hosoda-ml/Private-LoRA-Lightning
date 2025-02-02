@@ -1,14 +1,16 @@
 {
     "lora_rank": 8,
     "lora_dropout": 0.1,
-    "modify_layers": ".*q_proj|k_proj|v_proj.*",
-    "trainable_param_names": ".*lora_[ab].*",
-    "num_train_epochs": 5,
+    "model_modifier": "qvk_lora",
+    "modify_layers": "query_key_value",
+    "trainable_param_names": ".*lora_[qkv]_[ab].*",
+    "num_train_epochs": 15,
     "learning_rate": 1e-4,
     "train_batch_size": 2,
-    "precision": "16",
-    "model": "elyza/ELYZA-japanese-Llama-2-7b-instruct",
+    "precision": "32",
+    "model": "stockmark/gpt-neox-japanese-1.4b",
     "optimizer": "adamw",
     "dataset": "databricks-dolly-15k-ja-osaka",
+    "truncation_side": "left",
     "accelerator": "gpu"
 }
