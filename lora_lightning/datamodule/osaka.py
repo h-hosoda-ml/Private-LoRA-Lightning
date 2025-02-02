@@ -21,7 +21,7 @@ class OsakaInstructionDataset(Dataset):
         return {
             "instruction": item["instruction"],
             "input": item["input"],
-            "labels": item["output"],
+            "output": item["output"],
         }
 
 
@@ -39,7 +39,7 @@ class OsakaDataModule(DataModule):
             with open(os.path.join(self.args.data_dir, file_name)) as f:
                 dataset_json: list[dict] = json.load(f)
         except Exception:
-            logger.warning("データセットの読み込みに失敗しました")
+            logger.error("データセットの読み込みに失敗しました")
             raise
 
         dataset = OsakaInstructionDataset(dataset_json)
