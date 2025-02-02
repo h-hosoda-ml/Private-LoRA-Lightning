@@ -8,9 +8,9 @@ from lightning import Trainer
 from lora_lightning.logging import logger, setup_logging
 from lora_lightning.arguments import TrainingArgs
 from lora_lightning.datamodule.base import get_datamodule
+from lora_lightning.models.lightning.callbacks import LiveCheckpointCallback
 from lora_lightning.models.lightning.expert_module import ExpertModule
 from lora_lightning.models.lightning.loggers import get_pl_loggers
-from lora_lightning.models.lightning.callbacks import DataSizeCallback
 
 
 def train_lora(args: TrainingArgs, model_class: Type[ExpertModule]):
@@ -28,13 +28,29 @@ def train_lora(args: TrainingArgs, model_class: Type[ExpertModule]):
     # Lightning DataModule
     dm = get_datamodule(args)
 
+    # Lightning Callbacks
+    # TODO: その他のCallbackへの対応
+    monitor = "val/loss"
+    mode = "min"
+
+    checkpoint_callback = LiveCheckpointCallback(
+        dir_path=args.output_dir,
+        monitor=monitor,
+        save_last=True,
+        mode=mode,
+        save_each_epoch=False,
+    )
+    callbacks = [checkpoint_callback]
+
     # Lightning Module
     module = model_class(args)
 
     trainer = Trainer(
         devices=1,
         accelerator=args.accelerator,
+        default_root_dir=args.output_dir,
         logger=loggers,
+        callbacks=callbacks,
         num_sanity_val_steps=0,
         max_epochs=args.num_train_epochs,
         max_steps=args.total_steps + 1 if args.total_steps != -1 else -1,
