@@ -9,5 +9,9 @@ wheels/
 # venv
 .venv
 
-# log
+# logger artifacts
 log.txt
+mertics.json
+
+# Model Checkpoint
+*.ckpt
