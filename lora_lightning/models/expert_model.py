@@ -1,11 +1,10 @@
-import torch
 import torch.nn as nn
 
 from lora_lightning.arguments import TrainingArgs
 from lora_lightning.models.base import BaseModel
 
 from lora_lightning.models.modifier.base import Modifier
-from lora_lightning.models.modifier.lora import LoRA
+from lora_lightning.models.modifier.lora import LoRA, QvkLoRA
 
 
 class ExpertModel(BaseModel):
@@ -14,8 +13,10 @@ class ExpertModel(BaseModel):
     ):
         super().__init__(config, model_obj=model_obj, **kwargs)
 
-        if config.modify_layers is not None:
+        if config.model_modifier == "lora":
             LoRA.modify_transformer(self.model, config)
+        elif config.model_modifier == "qvk_lora":
+            QvkLoRA.modify_transformer(self.model, config)
 
     @property
     def modifiers(self):
