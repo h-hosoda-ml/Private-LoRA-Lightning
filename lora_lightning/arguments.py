@@ -2,6 +2,7 @@ import os
 import ast
 import json
 import argparse
+from typing import Literal
 from dataclasses import dataclass
 
 
@@ -16,6 +17,7 @@ class TrainingArgs:
 
     # tokenizer
     padding_side: str = "right"
+    truncation_side: str = "right"
 
     # Dataset
     dataset: str = None
@@ -41,14 +43,23 @@ class TrainingArgs:
     eval_every_n_epoch: int = 1
     seed: int = 42
     precision: str = "32"
+    for_generation: bool = False
 
     # LoRA Config
     lora_rank: int = 4
     lora_alpha: float = 16.0
     lora_dropout: float = 0.05
+    model_modifier: Literal["lora", "qvk_lora"] = "lora"
     modify_modules: str = ".*"
     modify_layers: str = None
     lora_init_b_random: bool = False
+
+    def __post_init__(self):
+        if self.for_generation == "true":
+            self.for_generation = True
+
+        elif self.for_generation == "false":
+            self.for_generation = False
 
     @classmethod
     def parse(cls):
