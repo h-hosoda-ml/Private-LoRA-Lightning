@@ -1,0 +1,17 @@
+{
+    "lora_rank": 8,
+    "lora_dropout": 0.1,
+    "model_modifier": "qvk_lora",
+    "modify_layers": "query_key_value",
+    "trainable_param_names": ".*lora_[qkv]_[ab].*",
+    "num_train_epochs": 15,
+    "learning_rate": 1e-4,
+    "train_batch_size": 2,
+    "precision": "32",
+    "model": "stockmark/gpt-neox-japanese-1.4b",
+    "optimizer": "adamw",
+    "dataset": "databricks-dolly-15k-ja-osaka",
+    "accelerator": "gpu",
+    "truncation_side": "left",
+    "for_generation": "true"
+}
